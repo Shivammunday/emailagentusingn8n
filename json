@@ -1,0 +1,278 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a strict automation assistant. Every time someone gives a name and email, immediately send this contact to the \"contact information\" tool for appending. After that, carefully WRITE the full email message, but DO NOT SEND IT YET. First, SHOW ME THE FULL EMAIL as a preview and wait for my confirmation. Only when I reply \"YES\", then you can send the email. If I do not reply \"YES\", do not send anything. Never skip the preview step, and never send without my approval. Write the email politely and clearly with a subject like \"Hello [name]\" and a long, respectful body that welcomes them and confirms their details. DO NOT add explanations or unrelated content. ONLY do what is asked."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        440,
+        -220
+      ],
+      "id": "dd46e031-13c1-4927-8f16-dd21fc18890f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "qwen/qwen-turbo",
+        "options": {
+          "responseFormat": "text"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        380,
+        40
+      ],
+      "id": "45f2a7f0-25e6-472d-9953-f6f1e4c70680",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "m6JnEs8t80ljKGZ3",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "once an email is approve send it to receiver email id",
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "shivam"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1060,
+        -140
+      ],
+      "id": "870d4d0c-e969-4186-8bb0-14b19058d18e",
+      "name": "Send a message in Gmail",
+      "webhookId": "f08cb1e0-8018-43f1-ad78-766804d30de4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "bldZjvMpYnT0IlRU",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        120,
+        -220
+      ],
+      "id": "9d7dcdef-5573-44fe-b1a6-4b7afc680794",
+      "name": "When chat message received",
+      "webhookId": "4463db36-aaec-4e17-9d39-2f6ef8e8041e"
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        40
+      ],
+      "id": "b9846ec3-1f81-4086-a47e-51477a78e796",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1tp6RUAqD7-w6qIv_9shbByfbpAtXfp12bcCGE5nhGCw",
+          "mode": "list",
+          "cachedResultName": "contacts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tp6RUAqD7-w6qIv_9shbByfbpAtXfp12bcCGE5nhGCw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tp6RUAqD7-w6qIv_9shbByfbpAtXfp12bcCGE5nhGCw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "NAME": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('NAME__using_to_match_', ``, 'string') }}",
+            "EMAIL": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('EMAIL', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "EMAIL"
+          ],
+          "schema": [
+            {
+              "id": "NAME",
+              "displayName": "NAME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "EMAIL",
+              "displayName": "EMAIL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        740,
+        40
+      ],
+      "id": "67e45fa5-145f-4e4a-8997-4bf411f20565",
+      "name": "contact information",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Kuj8zfOsyUcbyeKy",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "documentId": {
+          "__rl": true,
+          "value": "1tp6RUAqD7-w6qIv_9shbByfbpAtXfp12bcCGE5nhGCw",
+          "mode": "list",
+          "cachedResultName": "contacts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tp6RUAqD7-w6qIv_9shbByfbpAtXfp12bcCGE5nhGCw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tp6RUAqD7-w6qIv_9shbByfbpAtXfp12bcCGE5nhGCw/edit#gid=0"
+        },
+        "startIndex": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start_Row_Number', ``, 'number') }}",
+        "numberToDelete": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Number_of_Rows_to_Delete', ``, 'number') }}"
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        900,
+        0
+      ],
+      "id": "665de478-3b80-42dd-acd6-7cf51ef62498",
+      "name": "sender",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Kuj8zfOsyUcbyeKy",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "contact information": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "sender": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "77b0742f6a2422a0dd5afd360055f51f17b831537ab9ff5e024fd4867d49066c"
+  }
+}
